@@ -1,29 +1,36 @@
 // SPDX-License-Identifier: MIT
-
-pragma solidity >=0.6.0 <0.9.0;
+pragma solidity ^0.8.0;
 
 contract SimpleStorage {
-
-    uint256 favoriteNumber;
+    uint256 private favouriteNumber;
     
-    struct People {
-        uint256 favoriteNumber;
-        string name;
+    event NumberStored(uint256 newNumber);
+    event NumberIncremented(uint256 newNumber);
+    event NumberDecremented(uint256 newNumber);
+
+    function store(uint256 _favNum) public {
+        favouriteNumber = _favNum;
+        emit NumberStored(_favNum);
     }
 
-    People[] public people;
-    mapping(string => uint256) public nameToFavoriteNumber;
-
-    function store(uint256 _favoriteNumber) public {
-        favoriteNumber = _favoriteNumber;
-    }
-    
-    function retrieve() public view returns (uint256){
-        return favoriteNumber;
+    function getFavoriteNumber() public view returns (uint256) {
+        return favouriteNumber;
     }
 
-    function addPerson(string memory _name, uint256 _favoriteNumber) public {
-        people.push(People(_favoriteNumber, _name));
-        nameToFavoriteNumber[_name] = _favoriteNumber;
+    function increment() public {
+        require(favouriteNumber < type(uint256).max, "Maximum value reached");
+        favouriteNumber++;
+        emit NumberIncremented(favouriteNumber);
+    }
+
+    function decrement() public {
+        require(favouriteNumber > 0, "Number cannot be negative");
+        favouriteNumber--;
+        emit NumberDecremented(favouriteNumber);
+    }
+
+    function reset() public {
+        favouriteNumber = 0;
+        emit NumberStored(0);
     }
 }
